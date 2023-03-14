@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react'
 import {
   Heading,
@@ -11,9 +12,16 @@ import {
   Button,
   Flex,
   Center,
+  Container,
+  Card,
+  CardHeader,
+  Spacer,
+  CardBody,
 } from '@chakra-ui/react'
 import {HiDocumentAdd} from "react-icons/hi"; 
 import * as API from "../services/apiservice.js";
+import { Link } from "react-router-dom";
+import {Menu} from "./Menu.jsx";
 
 
 export function TableItems(){
@@ -25,17 +33,20 @@ export function TableItems(){
 
   return (
     <>
-    <Flex>
-        <Center>
-            <Heading as='h3' size='lg' p="4" m="4">Listado de Productos</Heading>
-        </Center>
-        <Center>
-            <Button colorScheme="green" leftIcon={<HiDocumentAdd/>}>Nuevo Item</Button>
-
-        </Center>
-    </Flex>
-    <section>
-        <TableContainer mt="15" p="4">
+    <Center p={8} ml={16} w={1920}>
+      <Container maxW='8xl' centerContent>
+        <Card w='100%' p={8} color='gray.500'>
+          <CardHeader>
+            <Flex>
+              <Heading size='lg'>Listado de Productos</Heading>
+              <Spacer/>
+              <Link to={'items/newItem'}>    
+                <Button colorScheme="green" leftIcon={<HiDocumentAdd/>}>Nuevo Item</Button>
+              </Link>
+            </Flex>
+          </CardHeader>
+          <CardBody>
+          <TableContainer mt="15" p="4">
           <Table variant='simple' >
             <Thead>
               <Tr>
@@ -52,15 +63,23 @@ export function TableItems(){
                   <Td>{item.description}</Td>
                   <Td>{item.price}</Td>
                   <Td>
-                    <Button variant='outline' mr="2" colorScheme="blue">Ver Item</Button>
-                    <Button variant='outline' colorScheme="green">Actualizar</Button>
+                    <Link to={`items/${item.id}`} state={{currentItem: item}}>
+                      <Button variant='outline' mr="2" colorScheme="blue">Ver Item</Button>
+                    </Link>
+                    <Link to={`items/update/${item.id}`} state={{currentItem: item}}>
+                      <Button variant='outline' colorScheme="green">Actualizar</Button>
+                    </Link>
                   </Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
         </TableContainer>
-    </section>
+          </CardBody>
+        </Card>
+      </Container>
+    </Center>
+
     </>
   );
 
