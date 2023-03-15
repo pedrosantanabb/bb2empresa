@@ -16,11 +16,8 @@ export function ItemDetail(props){
 
     return (
       <Center pt={16} w={1920}>
-        <Stack spacing={3}>
-          
-          
-        </Stack>
-      <Container maxW='4xl' centerContent>
+        
+      <Container maxW='6xl' centerContent>
               <Card w='100%' p={4} color='gray.500'>
                   <CardHeader>
                     {(message)?(

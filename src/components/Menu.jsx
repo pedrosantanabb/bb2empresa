@@ -48,10 +48,9 @@ const MenuLinks = ({ isOpen }) => {
           direction={["column", "row", "row", "row"]}
           pt={[4, 4, 0, 0]}
         >
-          <MenuItem to="/">Minha Conta</MenuItem>
-          <MenuItem to="/how"> Meus Pedidos </MenuItem>
-          <MenuItem to="/faetures"> Favoritos </MenuItem>
-          <MenuItem to="/pricing"> Recomendados </MenuItem>
+          <MenuItem to="/">Inicio</MenuItem>
+          <MenuItem to="/"> Productos </MenuItem>
+          <MenuItem to="/suppliers"> Proveedores </MenuItem>
           <MenuItem to="/signup" isLast>
             <Button
               size="sm"

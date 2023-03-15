@@ -1,34 +1,48 @@
 import React from "react";
-import { Card, Flex, Spacer, Select, Button, Center, Container, FormControl, FormLabel, Heading, Input, VStack, Box, CardHeader, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from "@chakra-ui/react";
+import { Table, Th, Tr, Td, Thead, Tbody, TableContainer, Card, Flex, Spacer, Select, Button, Center, Container, FormControl, FormLabel, Heading, Input, VStack, Box, CardHeader, CardBody, InputGroup, InputRightElement } from "@chakra-ui/react";
 import { useState, useEffect } from 'react'
 import { useForm } from "react-hook-form";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import * as API from "../services/apiservice.js";
+import { AddPriceReductionModal } from "./AddPriceReductionModal.jsx";
+import { TableSuppliersUpdate } from "./tables/TableSuppliersUpdate.jsx";
 
 export function ItemUpdateForm(){
     const navigate = useNavigate();
     const location = useLocation();    
     const { id } = useParams();
     const { currentItem }= location.state;
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [supplierSelected, setSupplierSelected] = useState(-1);
+    const [isOpen, setIsOpen] = useState(false);
     const {handleSubmit} = useForm();
-    
+   // const suppliers = (currentItem.supplierList)? currentItem.supplierList: [];
+    const [allSuppliers, setAllSuppliers] = useState([]);
     const [values, setValues] = useState({
         name: currentItem.name,
         description:  currentItem.description,
         price: currentItem.price,
-        state: currentItem.state
+        state: currentItem.state,
+        suppliers: currentItem.supplierList
     });   
 
+    const[suppliers, setSuppliers] = useState(currentItem.supplierList);
+
     useEffect(()=> {
-        console.log(`UseEffectBefore:${values.name} `);
         values.name = currentItem.name;
         values.description = currentItem.description;
         values.price = currentItem.price;
         values.state = currentItem.state;
-        console.log(`UseEffectAfter:${values.name} `);
+
+        API.getAllSuppliers().then(setAllSuppliers);
+        console.log(`AllSuppliers:${allSuppliers.length}`)
+       
     },[]);
+
+    function compareSuppliers(id){
+        const result = suppliers.filter(supplier => supplier.id === id);   
+        return result.length ==0;
+    }
 
     function handleChange(event){
         const {target} = event;
@@ -61,6 +75,26 @@ export function ItemUpdateForm(){
         }
     }
 
+    function addSupplier(event){
+        console.log("Añadir supplier:" + supplierSelected);
+        const supplier = allSuppliers.filter(sup => sup.id == Number(supplierSelected));
+        setSuppliers([...suppliers, supplier]);
+        const newValues = {
+            ...values,
+            [supplierList]: suppliers,
+        };
+        setValues(newValues);
+        console.log(suppliers.length);
+    }
+
+    function changeSupplierSelected(event){
+        console.log("ChanceSupplierSelected:"+ event.target.value);
+        //const id = Number(event.target.value);
+        //const supplier = allSuppliers.filter(sup => sup.id == id);
+        setSupplierSelected(event.target.value);
+        //console.log(supplierSelected.name);
+    }
+
     return (
       <>
         <Center pt={16} w={1920}>
@@ -91,42 +125,68 @@ export function ItemUpdateForm(){
                                         <option value='DISCONTINUED'>Descatalogado</option>
                                     </Select>
                                 </FormControl>
+                                <Box pt={8}>
+                                    <Heading pb={4} size='md'>Listado de Proveedores</Heading>
+                                    <Flex>
+                                        <Select mr={2} onChange={changeSupplierSelected} placeholder="Seleccione el proveedor que desea añadir">
+                                        {(allSuppliers?.length >0)?(
+                                            allSuppliers.map( supplier =>(
+                                            (compareSuppliers(supplier.id)) && <option key={supplier.id} value={supplier.id} >{supplier.name}</option> 
+                                        ))
+                                        ):(
+                                            <option>No hay proveedores</option>
+                                         )}
+                                        </Select>
+                                        <Button onClick={addSupplier} size='md'>Añadir</Button>
+
+                                    </Flex>                                   
+                              
+                                    <TableContainer mt="15" p="4">
+                                    <Table variant='simple' >
+                                        <Thead>
+                                            <Tr>
+                                                <Th>Name</Th>
+                                                <Th>Country</Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                        {(suppliers.length >2)?(
+                                        suppliers.map( supplier =>(
+                                            <Tr key={supplier.id}>
+                                                <Td>{supplier.name}</Td>
+                                                <Td>{supplier.country}</Td>
+                                            </Tr>
+                                        ))
+                                        ):(
+                                            <Tr>
+                                                <Td>
+                                                <strong>No se encontraron proveedores</strong>
+                                                </Td>
+                                            </Tr>
+                                        )}
+                                        </Tbody>
+                                    </Table>
+                                    </TableContainer>
+                                </Box>
                                 <Flex>
-                                    <Spacer/>
                                     <Button mr={4} colorScheme="green" type="submit" mt={4}>Actualizar</Button>
 
                                     <Link to={'/'}>    
                                         <Button colorScheme="red" type="submit" mt={4}>Cancelar</Button>
                                     </Link>
+                                    <Spacer/>
                                 </Flex>
                             </form>                         
                         </Box>
-                        <Button onClick={onOpen}>Open Modal</Button>
+                        
                     </CardBody>
                 </Card>
                     
             </Container> 
         </Center>
 
-
-        <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
-            
-            <ModalContent>
-                <ModalHeader>Añade un precio reducido</ModalHeader>
-                <ModalCloseButton/>
-                <ModalBody>
-
-                </ModalBody>
-
-                <ModalFooter>
-                <Button colorScheme='blue' mr={3}>
-              Save
-            </Button>
-            <Button onClick={onClose}>Cancel</Button>
-                </ModalFooter>
-            </ModalContent>
-            
-        </Modal>
+        {isOpen && <AddPriceReductionModal setIsOpen={setIsOpen} />}                                     
+        
         </>  
     );
 }

@@ -50,3 +50,48 @@ export async function createItem(requestOptions){
         console.log(error);
     }
 }
+
+export async function getSupplierDetail(id){
+    try {
+        const response = await fetch(`/api/suppliers/${id}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getAllSuppliers(){
+    try {
+        const response = await fetch(`/api/suppliers/`);
+        console.log(response);
+        const data = await response.json();
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function createSupplier(requestOptions){
+    try {
+        console.log(requestOptions.body);
+        const response =  await fetch(`/api/suppliers`, requestOptions);
+        const data = await response.json();
+        return data;
+    } catch(error){
+        console.log(error);
+    }
+}
+
+export async function updateSupplier(id, requestOptions){
+    try {
+        console.log(requestOptions.body);
+        const response =  await fetch(`/api/suppliers/${id}`, requestOptions);
+        const data = await response.json();
+        return data;
+    } catch(error){
+        console.log(error);
+        return error;
+    }
+}

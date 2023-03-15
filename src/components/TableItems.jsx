@@ -40,7 +40,7 @@ export function TableItems(){
             <Flex>
               <Heading size='lg'>Listado de Productos</Heading>
               <Spacer/>
-              <Link to={'items/newItem'}>    
+              <Link to={'/items/newItem'}>    
                 <Button colorScheme="green" leftIcon={<HiDocumentAdd/>}>Nuevo Item</Button>
               </Link>
             </Flex>
