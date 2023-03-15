@@ -23,6 +23,7 @@ export async function getItemById(id){
         return data;       
     } catch(error) {
         console.log(error);
+        return error;
     }
 
 }
@@ -35,6 +36,7 @@ export async function updateItem(id, requestOptions){
         return data;
     } catch(error){
         console.log(error);
+        return error;
     }
 }
 

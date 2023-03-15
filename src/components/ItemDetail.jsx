@@ -1,12 +1,14 @@
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
-import { Table, TableContainer, Th, Tr, Td, Thead, Tbody, Spacer, Flex, Textarea, Card, StackDivider, Button, Center, Container, FormControl, FormLabel, Heading, Input, VStack, Box, CardHeader, CardBody } from "@chakra-ui/react";
+import { useLocation, Link, useParams } from "react-router-dom";
+import { Table, TableContainer, Th, Tr, Td, Thead, Tbody, Spacer, Flex, Textarea, Card,  Alert, AlertTitle, AlertDescription, Button, Center, Container, FormControl, FormLabel, Heading, Input, VStack, Box, CardHeader, CardBody, Stack } from "@chakra-ui/react";
 
 export function ItemDetail(props){
-   
+    const {id} = useParams();
+    console.log(id);
     const {state} = useLocation();
     console.log(state);
-    const { currentItem }= state;
+    const { currentItem, message }= state;
+    console.log(message);
     console.log(currentItem);
     const item = currentItem;
     const suppliers = (currentItem.supplierList)? currentItem.supplierList: [];
@@ -14,13 +16,20 @@ export function ItemDetail(props){
 
     return (
       <Center pt={16} w={1920}>
+        <Stack spacing={3}>
+          
+          
+        </Stack>
       <Container maxW='4xl' centerContent>
               <Card w='100%' p={4} color='gray.500'>
                   <CardHeader>
+                    {(message)?(
+                      <Alert mb={4} status="success">{message}</Alert>
+                    ):(<></>)}
                       <Flex>
                         <Heading size='lg'>Item: {currentItem.name}</Heading>
                         <Spacer />
-                        <Link to={`/items/update/${currentItem.id}`} state={{currentItem: item}} >
+                        <Link to={`/items/update/${id}`} state={{currentItem: item}} >
                           <Button colorScheme="green">Actualizar</Button>
                         </Link>
                       </Flex>
