@@ -14,6 +14,7 @@ export function ItemUpdateForm(){
     const { id } = useParams();
     const { currentItem }= location.state;
     const [suppliers, setSuppliers] = useState(currentItem.supplierList);
+    const [pricesList, setPriceslist]  = useState(currentItem.priceReductions);
     const [supplierSelected, setSupplierSelected] = useState(-1);
     const [isOpen, setIsOpen] = useState(false);
     const [allSuppliers, setAllSuppliers] = useState([]);
@@ -23,6 +24,15 @@ export function ItemUpdateForm(){
         price: currentItem.price,
         state: currentItem.state,
         supplierList: [],
+        priceReductions: [],
+    });
+
+    const [newPriceReduction, setNewPriceReduction] = useState({
+        id:null,
+        reducedPrice: '',
+        startDate: '',
+        endDate: '',
+        item: { id: currentItem.id},
     });
     
     const { register, handleSubmit} = useForm({
@@ -34,6 +44,7 @@ export function ItemUpdateForm(){
             price: currentItem.price,
             state: currentItem.state,
             supplierList: [],
+            priceReductions:[],
         }
     });
 
@@ -55,6 +66,18 @@ export function ItemUpdateForm(){
         return result?.length ==0;
     }
 
+    function handlePriceReductionChange(event){
+        const {target} = event;
+        const { name, value} = target;
+        console.log(name + "," + value);
+        const newValues = {
+            ...newPriceReduction,
+            [name]: value,
+        };
+        setNewPriceReduction(newValues);
+        console.log(`HandleChangeAfter:${newPriceReduction.price} `);
+    }
+
     function handleChange(event){
         const {target} = event;
         const { name, value} = target;
@@ -70,6 +93,7 @@ export function ItemUpdateForm(){
     const onSubmit = (values) =>{
         try{
             values.supplierList = suppliers;
+            values.priceReductions= pricesList;
             const jsonBody = JSON.stringify(values);
             console.log("Transformando el body");
             console.log(jsonBody);
@@ -90,7 +114,7 @@ export function ItemUpdateForm(){
         }
     }
 
-    function addSupplier(event){
+    function addSupplier(){
         console.log("Añadir supplier:" + supplierSelected);
         const supplier = allSuppliers.filter(sup => sup.id == Number(supplierSelected));
         console.log(supplier[0].name);
@@ -101,6 +125,27 @@ export function ItemUpdateForm(){
 
         console.log(suppliers.length);
         console.log(suppliers);
+    }
+
+    function addPriceReduction(){
+        console.log("Añadir priceReduction:" + newPriceReduction);
+        const jsonBody = JSON.stringify(newPriceReduction);
+        API.createPriceReduction({
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: jsonBody,
+        }).then(function(result){
+            console.log("Resultado:")
+            console.log(result);
+            setPriceslist([
+                ...pricesList,
+                {id: result.id, reducedPrice: result.reducedPrice, startDate: result.startDate, endDate: result.endDate}
+            ]);
+        });
+
+        
     }
 
     function changeSupplierSelected(event){
@@ -174,6 +219,53 @@ export function ItemUpdateForm(){
                                             <Tr>
                                                 <Td>
                                                 <strong>No se encontraron proveedores</strong>
+                                                </Td>
+                                            </Tr>
+                                        )}
+                                        </Tbody>
+                                    </Table>
+                                    </TableContainer>
+                                </Box>
+                                <Box pt={8}>
+                                    <Heading pb={4} size='md'>Listado de Precios Reducidos</Heading>
+                                    <Flex>
+                                        <FormControl isRequired mr={4}>
+                                            <FormLabel>Precio Reducido</FormLabel>
+                                            <Input id="reducedPrice" name="reducedPrice" onChange={handlePriceReductionChange} isRequired/>
+                                        </FormControl>
+                                        <FormControl isRequired mr={4}>
+                                            <FormLabel>Fecha de Inicio</FormLabel>
+                                            <Input id="startDate" name="startDate" type="date" onChange={handlePriceReductionChange} isRequired/>
+                                        </FormControl>
+                                        <FormControl isRequired mr={4}>
+                                            <FormLabel>Fecha de Fin</FormLabel>
+                                            <Input id="endDate" name="endDate" type="date" onChange={handlePriceReductionChange} isRequired/>
+                                        </FormControl>
+                                        <Button onClick={addPriceReduction} size='lg'>Añadir</Button>
+
+                                    </Flex>                                   
+                                    <TableContainer mt="15" p="4">
+                                    <Table variant='simple' >
+                                        <Thead>
+                                            <Tr>
+                                                <Th>Precio</Th>
+                                                <Th>Fecha Inicio</Th>
+                                                <Th>Fecha Fin</Th>
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                        {(pricesList?.length >0)?(
+                                        pricesList?.map( priceR =>(
+                                            <Tr key={priceR.id}>
+                                                <Td>{priceR.reducedPrice}</Td>
+                                                <Td>{priceR.startDate}</Td>
+                                                <Td>{priceR.endDate}</Td>
+                                            </Tr>
+                                        ))
+                                        ):(
+                                            <Tr>
+                                                <Td>
+                                                <strong>No se encontraron precios reducidos</strong>
                                                 </Td>
                                             </Tr>
                                         )}

@@ -95,3 +95,14 @@ export async function updateSupplier(id, requestOptions){
         return error;
     }
 }
+
+export async function createPriceReduction(requestOptions){
+    try {
+        console.log(requestOptions.body);
+        const response =  await fetch(`/api/pricereductions`, requestOptions);
+        const data = await response.json();
+        return data;
+    } catch(error){
+        console.log(error);
+    }
+}
