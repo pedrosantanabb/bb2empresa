@@ -56,8 +56,8 @@ export function ItemDetail(props){
                           <Table variant='simple' >
                             <Thead>
                               <Tr>
-                                <Th>Name</Th>
-                                <Th>Country</Th>
+                                <Th>Nombre</Th>
+                                <Th>País</Th>
                               </Tr>
                             </Thead>
                             <Tbody>

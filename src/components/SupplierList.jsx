@@ -1,6 +1,7 @@
 import * as API from "../services/apiservice.js";
 import { useState, useEffect } from 'react'
 import {
+    Spinner,
     Alert,
     Heading,
     Table,
@@ -18,20 +19,33 @@ import {
     CardHeader,
     Spacer,
     CardBody,
-  } from '@chakra-ui/react'
+  } from '@chakra-ui/react';
 
   import {HiDocumentAdd} from "react-icons/hi"; 
   import { Link, useLocation } from "react-router-dom";
+  import {useAuth0} from "@auth0/auth0-react";
+  import { NoAuthenticatedUser } from "./NoAuthenticatedError.jsx";
+import { LoadingState } from "./LoadingState.jsx";
 
 export function SupplierList(){
+    const { isAuthenticated, isLoading } = useAuth0();
+    if(isLoading){
+        return <LoadingState/>;
+    }
+    
+    if(!isAuthenticated)return <NoAuthenticatedUser/>;
+
     const {state} = useLocation();
     console.log(state);
     
     const [suppliers, setSuppliers] = useState([]);
 
+
     useEffect(() => {
         API.getAllSuppliers().then(setSuppliers);
       }, []);
+
+      
 
     return (
         <>
@@ -55,8 +69,8 @@ export function SupplierList(){
                     <Table variant='simple' >
                         <Thead>
                         <Tr>
-                            <Th>Name</Th>
-                            <Th>Country</Th>
+                            <Th>Nombre</Th>
+                            <Th>País</Th>
                             <Th></Th>
                         </Tr>
                         </Thead>

@@ -13,20 +13,29 @@ export function ItemUpdateForm(){
     const location = useLocation();    
     const { id } = useParams();
     const { currentItem }= location.state;
+    const [suppliers, setSuppliers] = useState(currentItem.supplierList);
     const [supplierSelected, setSupplierSelected] = useState(-1);
     const [isOpen, setIsOpen] = useState(false);
-    const {handleSubmit} = useForm();
-   // const suppliers = (currentItem.supplierList)? currentItem.supplierList: [];
     const [allSuppliers, setAllSuppliers] = useState([]);
     const [values, setValues] = useState({
         name: currentItem.name,
         description:  currentItem.description,
         price: currentItem.price,
         state: currentItem.state,
-        suppliers: currentItem.supplierList
-    });   
-
-    const[suppliers, setSuppliers] = useState(currentItem.supplierList);
+        supplierList: [],
+    });
+    
+    const { register, handleSubmit} = useForm({
+        defaultValues:{
+            id: currentItem.id,
+            creationDate: currentItem.creationDate,
+            name: currentItem.name,
+            description: currentItem.description,
+            price: currentItem.price,
+            state: currentItem.state,
+            supplierList: [],
+        }
+    });
 
     useEffect(()=> {
         values.name = currentItem.name;
@@ -39,9 +48,11 @@ export function ItemUpdateForm(){
        
     },[]);
 
+    
+
     function compareSuppliers(id){
-        const result = suppliers.filter(supplier => supplier.id === id);   
-        return result.length ==0;
+        const result = currentItem.supplierList?.filter(supplier => supplier.id === id);   
+        return result?.length ==0;
     }
 
     function handleChange(event){
@@ -56,15 +67,19 @@ export function ItemUpdateForm(){
         console.log(`HandleChangeAfter:${values.name} `);
     }
 
-    const onSubmit = () =>{
+    const onSubmit = (values) =>{
         try{
+            values.supplierList = suppliers;
+            const jsonBody = JSON.stringify(values);
+            console.log("Transformando el body");
+            console.log(jsonBody);
             API.updateItem(currentItem.id, {
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json",
                     "x-access-token": "token-value",
                 },
-                body: JSON.stringify(values),
+                body: jsonBody,
             }).then(function(result){
                 console.log(result);
 
@@ -78,21 +93,19 @@ export function ItemUpdateForm(){
     function addSupplier(event){
         console.log("Añadir supplier:" + supplierSelected);
         const supplier = allSuppliers.filter(sup => sup.id == Number(supplierSelected));
-        setSuppliers([...suppliers, supplier]);
-        const newValues = {
-            ...values,
-            [supplierList]: suppliers,
-        };
-        setValues(newValues);
+        console.log(supplier[0].name);
+        setSuppliers([
+            ...suppliers,
+            {id: supplier[0].id, name: supplier[0].name, country: supplier[0].country }
+        ]);
+
         console.log(suppliers.length);
+        console.log(suppliers);
     }
 
     function changeSupplierSelected(event){
-        console.log("ChanceSupplierSelected:"+ event.target.value);
-        //const id = Number(event.target.value);
-        //const supplier = allSuppliers.filter(sup => sup.id == id);
+        console.log("ChanceSupplierSelected:"+ event.target.value);        
         setSupplierSelected(event.target.value);
-        //console.log(supplierSelected.name);
     }
 
     return (
@@ -145,13 +158,13 @@ export function ItemUpdateForm(){
                                     <Table variant='simple' >
                                         <Thead>
                                             <Tr>
-                                                <Th>Name</Th>
-                                                <Th>Country</Th>
+                                                <Th>Nombre</Th>
+                                                <Th>País</Th>
                                             </Tr>
                                         </Thead>
                                         <Tbody>
-                                        {(suppliers.length >2)?(
-                                        suppliers.map( supplier =>(
+                                        {(suppliers?.length >0)?(
+                                        suppliers?.map( supplier =>(
                                             <Tr key={supplier.id}>
                                                 <Td>{supplier.name}</Td>
                                                 <Td>{supplier.country}</Td>
@@ -171,7 +184,7 @@ export function ItemUpdateForm(){
                                 <Flex>
                                     <Button mr={4} colorScheme="green" type="submit" mt={4}>Actualizar</Button>
 
-                                    <Link to={'/'}>    
+                                    <Link to={'/items'}>    
                                         <Button colorScheme="red" type="submit" mt={4}>Cancelar</Button>
                                     </Link>
                                     <Spacer/>

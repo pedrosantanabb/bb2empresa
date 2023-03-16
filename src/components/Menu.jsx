@@ -1,10 +1,12 @@
 
 import React from "react";
-import { Link, Box, Flex, Text, Button, Stack } from "@chakra-ui/react";
-
+import { Box, Flex, Text, Button, Stack } from "@chakra-ui/react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 
 export function Menu({props}){
+    
     const [isOpen, setIsOpen] = React.useState(true);
     const toggle = () => setIsOpen(!isOpen);
     return (
@@ -36,6 +38,7 @@ const NavBarContainer = ({ children, ...props }) => {
   };
 
 const MenuLinks = ({ isOpen }) => {
+  const {logout, loginWithRedirect, isAuthenticated } = useAuth0();
     return (
       <Box
         display={{ base: isOpen ? "block" : "none", md: "block" }}
@@ -49,21 +52,33 @@ const MenuLinks = ({ isOpen }) => {
           pt={[4, 4, 0, 0]}
         >
           <MenuItem to="/">Inicio</MenuItem>
-          <MenuItem to="/"> Productos </MenuItem>
+          <MenuItem to="/items"> Productos </MenuItem>
           <MenuItem to="/suppliers"> Proveedores </MenuItem>
-          <MenuItem to="/signup" isLast>
+          {(isAuthenticated)?(
+            <MenuItem to="/" isLast>
+              <Button size="sm" 
+              rounded="md" color={["primary.500", "primary.500", "white", "white"]} 
+              bg={["red", "red", "primary.500", "primary.500"]} 
+              _hover={{bg: ["primary.100", "primary.100", "primary.600", "primary.600"]}}
+              onClick={logout}>
+                Logout
+              </Button>
+            </MenuItem>
+          ):(
+          <MenuItem to={loginWithRedirect} isLast>
             <Button
               size="sm"
               rounded="md"
-              color={["primary.500", "primary.500", "white", "white"]}
-              bg={["white", "white", "primary.500", "primary.500"]}
+              color={["black", "primary.500", "white", "white"]}
+              bg={["green", "green", "primary.500", "primary.500"]}
               _hover={{
                 bg: ["primary.100", "primary.100", "primary.600", "primary.600"]
-              }}
+              }} onClick={loginWithRedirect}
             >
-              Sair
+              Login
             </Button>
           </MenuItem>
+          )}
         </Stack>
       </Box>
     );
@@ -72,7 +87,7 @@ const MenuLinks = ({ isOpen }) => {
 
 const MenuItem = ({ children, isLast, to = "/", ...rest }) => {
     return (
-      <Link href={to}>
+      <Link to={to}>
         <Text display="block" {...rest}>
           {children}
         </Text>

@@ -10,6 +10,7 @@ import { Menu } from './components/Menu.jsx';
 import { SupplierNewForm } from './components/SupplierNewForm.jsx';
 import { SupplierUpdateForm } from './components/SupplierUpdateForm.jsx';
 import { SupplierDetail } from './components/SupplierDetail.jsx';
+import { Home } from './components/Home.jsx';
 
 
 export function App() {
@@ -17,7 +18,8 @@ export function App() {
     <>
       <Menu/>
       <Routes>
-        <Route path='/' element={<TableItems/>}/>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/items' element={<TableItems/>}/>
         <Route path='/items/:id' element={<ItemDetail/>}/>
         <Route path='/items/update/:id' element={<ItemUpdateForm/>}/>
         <Route path='/items/newItem' element={<ItemNewForm/>}/>

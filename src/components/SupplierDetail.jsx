@@ -47,9 +47,9 @@ export function SupplierDetail(){
                                     <Table variant='simple' >
                                     <Thead>
                                         <Tr>
-                                            <Th>Name</Th>
-                                            <Th>Description</Th>
-                                            <Th>Price</Th>
+                                            <Th>Nombre</Th>
+                                            <Th>Descripción</Th>
+                                            <Th>Precio</Th>
                                         </Tr>
                                     </Thead>
                                     <Tbody>
@@ -63,11 +63,9 @@ export function SupplierDetail(){
                                         ))
                                         ):(
                                             <Tr>
-                                            <Td>
-                                            <strong>No se encontraron proveedores</strong>
-                                                
-                                            </Td>
-
+                                                <Td>
+                                                    <strong>No se encontraron items</strong>
+                                                </Td>
                                             </Tr>
                                         )}
                                     </Tbody>

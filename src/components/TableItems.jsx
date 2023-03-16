@@ -17,15 +17,24 @@ import {
   CardHeader,
   Spacer,
   CardBody,
+  Spinner,
 } from '@chakra-ui/react'
 import {HiDocumentAdd} from "react-icons/hi"; 
 import * as API from "../services/apiservice.js";
 import { Link } from "react-router-dom";
-import {Menu} from "./Menu.jsx";
+import {useAuth0} from "@auth0/auth0-react";
+import { NoAuthenticatedUser } from "./NoAuthenticatedError.jsx";
+import { LoadingState } from "./LoadingState.jsx";
+
 
 
 export function TableItems(){
-    const [items, setItems] = useState([]);
+  const { isAuthenticated, isLoading } = useAuth0();
+  
+  if(isLoading)return <LoadingState/>;
+  if(!isAuthenticated)return <NoAuthenticatedUser/>;
+  
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     API.getAllItems().then(setItems);
@@ -50,9 +59,9 @@ export function TableItems(){
           <Table variant='simple' >
             <Thead>
               <Tr>
-                <Th>Name</Th>
-                <Th>Description</Th>
-                <Th>Price</Th>
+                <Th>Nombre</Th>
+                <Th>Descripción</Th>
+                <Th>Precio</Th>
                 <Th></Th>
               </Tr>
             </Thead>
@@ -63,10 +72,10 @@ export function TableItems(){
                   <Td>{item.description}</Td>
                   <Td>{item.price}</Td>
                   <Td>
-                    <Link to={`items/${item.id}`} state={{currentItem: item}}>
+                    <Link to={`/items/${item.id}`} state={{currentItem: item}}>
                       <Button variant='outline' mr="2" colorScheme="blue">Ver Item</Button>
                     </Link>
-                    <Link to={`items/update/${item.id}`} state={{currentItem: item}}>
+                    <Link to={`/items/update/${item.id}`} state={{currentItem: item}}>
                       <Button variant='outline' colorScheme="green">Actualizar</Button>
                     </Link>
                   </Td>
